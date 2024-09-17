@@ -8,3 +8,4 @@ app.log
 dist/
 build/
 *.spec
+.idea

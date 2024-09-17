@@ -1,9 +1,8 @@
-# main.py
-
 import os
 import threading
 import logging
 import time
+import signal
 from notion_client import Client
 from dotenv import load_dotenv
 from utils import get_database_ids
@@ -55,11 +54,22 @@ def main():
     t1.start()
     t2.start()
 
+    def signal_handler(sig, frame):
+        logging.info("Programa interrompido pelo usuário. Encerrando...")
+        running.clear()
+        t1.join()
+        t2.join()
+        exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         logging.info("Programa interrompido pelo usuário. Encerrando...")
+    finally:
         running.clear()
         t1.join()
         t2.join()
